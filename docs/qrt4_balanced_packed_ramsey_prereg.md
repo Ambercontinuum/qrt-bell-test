@@ -282,7 +282,7 @@ Known limitation: because conditions are measured on different qubits within a p
 
 Uploaded or recorded before freeze:
 
-- `tests/qrt_ramsey_test.py` frozen execution/analysis script.
-- SHA-256: `a6d79659ade2afba6ce95f40c3db7b583d958da75795815095a0667ae076e41f`
+- `tests/qrt4_balanced_packed_ramsey_test.py` frozen execution/analysis script.
+- SHA-256: `d97c88ed1018e8290e7facd50dd264eaf699f585b62705b44e64ed4f2a769a5f`
 - Simulator/power-check output, labeled non-evidential.
 - Waveform-audit output from the frozen script before hardware execution.

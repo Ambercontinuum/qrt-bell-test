@@ -384,7 +384,7 @@ The theory under test and this preregistration share an author. The draft was pr
 
 Uploaded or recorded before freeze:
 
-- `tests/qrt_ramsey_test.py` frozen execution/analysis script.
-- SHA-256: `95e98218c9671f37758dc45da05b06b7103b66b1618695b968f2898858fdf6c0`
+- `tests/qrt3_ramsey_test.py` frozen execution/analysis script.
+- SHA-256: `36afe14a2a8f2147a81b66fcfec123b3402a239a95ea170a9146c62b53acfbb0`
 - Simulator/power-check output, labeled non-evidential.
 - Waveform-audit output from the frozen script before hardware execution.
