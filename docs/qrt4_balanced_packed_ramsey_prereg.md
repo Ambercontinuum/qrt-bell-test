@@ -66,6 +66,18 @@ Randomized experiment on superconducting quantum hardware.
 
 ---
 
+### Intention For Causal Interpretation
+
+Direct inference on causal relationship(s). The study estimates whether the manipulated drive condition causes a change in fitted Ramsey coherence time T2*. The same backend session, delay grid, shot count, physical-drive implementation, fit model, and analysis script are used across conditions. The balanced packed layout reduces queue/runtime burden, while assignment rotation reduces but does not eliminate qubit-position confounding.
+
+---
+
+### Blinding Of Experimental Treatments
+
+No blinding is involved. Treatment labels are embedded in the scripted circuits and assignment maps. The analysis is fully scripted, and the confirmatory decision rule is applied once after the completed session returns all planned counts.
+
+---
+
 ### Study Design
 
 Single-qubit Ramsey/T2-style experiment executed in a packed multi-qubit layout.
@@ -217,6 +229,27 @@ Recorded covariates:
 
 ---
 
+### Indices
+
+Primary index:
+
+G_T2 = T2*(10 MHz driven) / mean(T2*(off-resonance driven controls)) - 1
+
+The primary control aggregate is the mean of the off-resonance driven controls at 1, 5, 15, and 25 MHz. The undriven reference is measured and reported descriptively, but it is not part of the primary control aggregate.
+
+Secondary descriptive indices:
+
+- T2* for each condition.
+- 10 MHz versus undriven relative T2* gain.
+- Per-condition fitted offset and amplitude.
+- Per-condition marginal outcome-0 probability by tau.
+- Waveform RMS, maximum absolute angle, phase coverage, and alias diagnostics.
+- Assignment-repetition summaries checking whether results depend on condition-to-qubit placement.
+
+Only G_T2 carries confirmatory inferential weight.
+
+---
+
 ### Statistical Models
 
 For each condition, fit:
@@ -245,6 +278,30 @@ Decision rule:
 Packed bitstring counts are reduced to single-qubit marginal counts for each assigned condition. Marginal counts are divided by shots to produce probabilities. Fitted T2* values are transformed into G_T2.
 
 No readout-error correction, smoothing, delay removal, alternate control aggregate, or alternate fit model is used for the confirmatory verdict.
+
+---
+
+### Inference Criteria
+
+Inference is interval-based. The primary 95% CI for G_T2 is compared against 0 and the preregistered +5% threshold.
+
+Criterion for QRT-consistent escalation:
+
+- G_T2 point estimate is at least +5%.
+- The 95% CI lower bound is greater than 0.
+
+Criterion for falsification as specified:
+
+- The 95% CI upper bound is below +5%.
+
+Inconclusive:
+
+- The 95% CI includes +5%.
+
+Multiple comparisons:
+
+- No correction is applied because one primary contrast is confirmatory.
+- Per-frequency, per-delay, waveform, qubit-assignment, and assignment-repetition diagnostics are descriptive unless separately preregistered.
 
 ---
 
