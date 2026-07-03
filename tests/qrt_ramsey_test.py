@@ -15,6 +15,9 @@ Core safeguards:
   * The 10 MHz schedule must not collapse to zero-crossing samples.
   * Off-resonance controls must not alias into the same discrete waveform.
   * IBM execution uses physical fractional RX pulses when available.
+  * The default IBM layout uses an RRC-native orbit-packed workload: all
+    conditions are run in parallel across qubits, with condition-to-qubit
+    rotations sampling hardware-position bias while cutting PUB count.
 
 Usage:
   python tests/qrt_ramsey_test.py --backend synthetic
@@ -48,8 +51,16 @@ SHOTS = 19500
 N_BOOT = 1000
 SEED = 20260704
 THRESHOLD = 0.05
+LAYOUT = "rrc-packed"
+RRC_ORBIT_REPS = 2
 
 RESULTS_DIR = Path("results")
+
+
+def condition_specs() -> list[tuple[str, int, bool]]:
+    conditions = [(f"{f}MHz", f, True) for f in FREQS_MHZ]
+    conditions.append(("REF", 0, False))
+    return conditions
 
 
 def tau_grid_ns(tau_max_ns: int = TAU_MAX_NS, n_taus: int = N_TAUS) -> list[int]:
@@ -165,6 +176,78 @@ def ramsey_drive_circuit(
     qc.h(0)
     qc.measure(0, 0)
     return qc
+
+
+def rrc_orbit_assignments(
+    orbit_reps: int,
+) -> list[list[tuple[str, int, bool]]]:
+    """Condition-to-qubit orbit reps, following RRC representative rotation."""
+    base = condition_specs()
+    n = len(base)
+    reps = max(1, min(int(orbit_reps), n))
+    assignments = []
+    seen = set()
+    for rep in range(reps):
+        shift = (rep * n) // reps
+        rotated = base[shift:] + base[:shift]
+        key = tuple(c for c, _, _ in rotated)
+        if key not in seen:
+            assignments.append(rotated)
+            seen.add(key)
+    return assignments
+
+
+def rrc_packed_ramsey_circuit(
+    tau_ns: int,
+    assignment: list[tuple[str, int, bool]],
+    drive_step_ns: int = DRIVE_STEP_NS,
+) -> QuantumCircuit:
+    """Packed Ramsey circuit: one condition per qubit, one tau per PUB."""
+    n_qubits = len(assignment)
+    qc = QuantumCircuit(n_qubits, n_qubits)
+    for q in range(n_qubits):
+        qc.h(q)
+
+    per_qubit_angles = [
+        drive_samples(tau_ns, max(freq, 1), driven, drive_step_ns)[1]
+        for _, freq, driven in assignment
+    ]
+    n_steps = tau_ns // drive_step_ns
+    used_ns = 0
+    for step in range(n_steps):
+        for q in range(n_qubits):
+            qc.delay(drive_step_ns, q, unit="ns")
+        used_ns += drive_step_ns
+        for q, (_, _, driven) in enumerate(assignment):
+            if driven:
+                qc.rx(per_qubit_angles[q][step], q)
+
+    rem = tau_ns - used_ns
+    if rem > 0:
+        for q in range(n_qubits):
+            qc.delay(rem, q, unit="ns")
+
+    for q in range(n_qubits):
+        qc.h(q)
+        qc.measure(q, q)
+    return qc
+
+
+def marginal_counts(
+    counts: dict[str, int],
+    classical_index: int,
+    n_clbits: int,
+) -> dict[str, int]:
+    zeros = 0
+    ones = 0
+    for bitstring, count in counts.items():
+        compact = bitstring.replace(" ", "").zfill(n_clbits)
+        bit = compact[::-1][classical_index]
+        if bit == "0":
+            zeros += int(count)
+        else:
+            ones += int(count)
+    return {"0": zeros, "1": ones}
 
 
 def count_zero_probability(counts: dict[str, int]) -> tuple[float, int]:
@@ -287,9 +370,7 @@ def synthetic_counts(
     if true_t2_ns is None:
         true_t2_ns = max(float(max(taus_ns)) / 2.0, 1000.0)
     raw = []
-    conditions = [(f"{f}MHz", f, True) for f in FREQS_MHZ]
-    conditions.append(("REF", 0, False))
-    for condition, freq, driven in conditions:
+    for condition, freq, driven in condition_specs():
         t2 = true_t2_ns * (1 + qrt_effect if freq == RES_FREQ_MHZ and driven else 1)
         for tau in taus_ns:
             p0 = float(decay_model(np.array([tau], dtype=float), 0.5, 0.48, t2)[0])
@@ -307,9 +388,12 @@ def synthetic_counts(
 
 def run_synthetic(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     taus = tau_grid_ns(args.tau_max_ns, args.n_taus)
+    effective_shots = args.shots
+    if args.layout == "rrc-packed":
+        effective_shots *= len(rrc_orbit_assignments(args.rrc_orbit_reps))
     raw = synthetic_counts(
         taus,
-        args.shots,
+        effective_shots,
         args.seed,
         qrt_effect=args.synthetic_effect,
         shot_noise=args.synthetic_shot_noise,
@@ -330,8 +414,9 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
 
     service = QiskitRuntimeService()
+    min_qubits = len(condition_specs()) if args.layout == "rrc-packed" else 1
     name = args.device or service.least_busy(
-        operational=True, simulator=False, min_num_qubits=1
+        operational=True, simulator=False, min_num_qubits=min_qubits
     ).name
     backend = service.backend(name, use_fractional_gates=True)
     print(f"[backend] {backend.name} (fractional gates enabled)")
@@ -350,34 +435,66 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     calib_path.write_text(json.dumps(calib, indent=2, default=str), encoding="utf-8")
 
     taus = tau_grid_ns(args.tau_max_ns, args.n_taus)
-    cells = [(f"{f}MHz", f, True, tau) for f in FREQS_MHZ for tau in taus]
-    cells += [("REF", 0, False, tau) for tau in taus]
     rng = np.random.default_rng(args.seed)
-    rng.shuffle(cells)
-    executed_order = [
-        {"condition": c, "freq_mhz": f, "driven": d, "tau_ns": tau}
-        for c, f, d, tau in cells
-    ]
+    if args.layout == "serial":
+        pubs = [
+            {
+                "layout": "serial",
+                "condition": c,
+                "freq_mhz": f,
+                "driven": d,
+                "tau_ns": tau,
+            }
+            for c, f, d in condition_specs()
+            for tau in taus
+        ]
+    else:
+        assignments = rrc_orbit_assignments(args.rrc_orbit_reps)
+        pubs = [
+            {
+                "layout": "rrc-packed",
+                "tau_ns": tau,
+                "orbit_rep": orbit_rep,
+                "assignment": [
+                    {"condition": c, "freq_mhz": f, "driven": d, "qubit_index": q}
+                    for q, (c, f, d) in enumerate(assignment)
+                ],
+            }
+            for tau in taus
+            for orbit_rep, assignment in enumerate(assignments)
+        ]
+    rng.shuffle(pubs)
+    executed_order = pubs
 
     pm = generate_preset_pass_manager(backend=backend, optimization_level=1)
     isa = []
     physicality_log = []
-    for condition, freq, driven, tau in cells:
-        qc = ramsey_drive_circuit(tau, max(freq, 1), driven, args.drive_step_ns)
+    for pub in pubs:
+        tau = pub["tau_ns"]
+        if pub["layout"] == "serial":
+            qc = ramsey_drive_circuit(
+                tau,
+                max(pub["freq_mhz"], 1),
+                pub["driven"],
+                args.drive_step_ns,
+            )
+            physicality_subject = pub["condition"]
+            needs_rx = pub["driven"] and tau > 0
+        else:
+            assignment = [
+                (item["condition"], item["freq_mhz"], item["driven"])
+                for item in pub["assignment"]
+            ]
+            qc = rrc_packed_ramsey_circuit(tau, assignment, args.drive_step_ns)
+            physicality_subject = f"rrc-packed/orbit={pub['orbit_rep']}"
+            needs_rx = tau > 0 and any(item["driven"] for item in pub["assignment"])
         tqc = pm.run(qc)
         ops = dict(tqc.count_ops())
-        if driven and tau > 0 and "rx" not in ops:
+        if needs_rx and "rx" not in ops:
             raise RuntimeError(
-                f"PHYSICALITY VIOLATION in {condition}/tau={tau}: no native rx in {ops}"
+                f"PHYSICALITY VIOLATION in {physicality_subject}/tau={tau}: no native rx in {ops}"
             )
-        physicality_log.append({
-            "condition": condition,
-            "freq_mhz": freq,
-            "driven": driven,
-            "tau_ns": tau,
-            "ops": ops,
-            "depth": tqc.depth(),
-        })
+        physicality_log.append({**pub, "ops": ops, "depth": tqc.depth()})
         isa.append(tqc)
 
     sampler = Sampler(mode=backend)
@@ -389,22 +506,60 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     except Exception as exc:
         print(f"[options] note: {exc!r}")
 
-    print(f"[submit] {len(isa)} PUBs x {args.shots} shots, randomized seed {args.seed}")
+    print(
+        f"[submit] {len(isa)} PUBs x {args.shots} shots, "
+        f"layout={args.layout}, randomized seed {args.seed}"
+    )
     job = sampler.run([(qc,) for qc in isa])
     print(f"[job] id = {job.job_id()} - waiting...")
     result = job.result()
 
-    raw = []
-    for cell, pub in zip(cells, result):
-        condition, freq, driven, tau = cell
-        counts = pub.data.c.get_counts()
-        raw.append({
-            "condition": condition,
-            "freq_mhz": freq,
-            "driven": driven,
-            "tau_ns": tau,
-            "counts": counts,
-        })
+    if args.layout == "serial":
+        raw = []
+    else:
+        aggregated: dict[tuple[str, int], dict[str, Any]] = {}
+    for pub, pub_result in zip(pubs, result):
+        tau = pub["tau_ns"]
+        counts = pub_result.data.c.get_counts()
+        if pub["layout"] == "serial":
+            condition = pub["condition"]
+            freq = pub["freq_mhz"]
+            driven = pub["driven"]
+            raw.append({
+                "condition": condition,
+                "freq_mhz": freq,
+                "driven": driven,
+                "tau_ns": tau,
+                "counts": counts,
+            })
+            continue
+
+        n_clbits = len(pub["assignment"])
+        for item in pub["assignment"]:
+            condition = item["condition"]
+            freq = item["freq_mhz"]
+            driven = item["driven"]
+            key = (condition, tau)
+            marg = marginal_counts(counts, item["qubit_index"], n_clbits)
+            row = aggregated.setdefault(
+                key,
+                {
+                    "condition": condition,
+                    "freq_mhz": freq,
+                    "driven": driven,
+                    "tau_ns": tau,
+                    "counts": {"0": 0, "1": 0},
+                    "rrc_orbit_reps_observed": 0,
+                    "source_layout": "rrc-packed",
+                },
+            )
+            row["counts"]["0"] += marg["0"]
+            row["counts"]["1"] += marg["1"]
+            row["rrc_orbit_reps_observed"] += 1
+
+    if args.layout == "rrc-packed":
+        raw = list(aggregated.values())
+        raw.sort(key=lambda r: (r["condition"], r["tau_ns"]))
 
     analysis = analyze_counts(raw, args.n_boot, args.seed)
     return {
@@ -430,6 +585,22 @@ def frozen_parameters(args: argparse.Namespace) -> dict[str, Any]:
         "tau_max_ns": args.tau_max_ns,
         "n_taus": args.n_taus,
         "shots": args.shots,
+        "layout": args.layout,
+        "rrc_orbit_reps": args.rrc_orbit_reps,
+        "conditions": [
+            {"condition": c, "freq_mhz": f, "driven": d}
+            for c, f, d in condition_specs()
+        ],
+        "planned_pubs": (
+            args.n_taus * len(condition_specs())
+            if args.layout == "serial"
+            else args.n_taus * len(rrc_orbit_assignments(args.rrc_orbit_reps))
+        ),
+        "effective_shots_per_condition_tau": (
+            args.shots
+            if args.layout == "serial"
+            else args.shots * len(rrc_orbit_assignments(args.rrc_orbit_reps))
+        ),
         "n_boot": args.n_boot,
         "seed": args.seed,
         "threshold": THRESHOLD,
@@ -447,6 +618,8 @@ def main() -> None:
     ap.add_argument("--drive-step-ns", type=int, default=DRIVE_STEP_NS)
     ap.add_argument("--tau-max-ns", type=int, default=TAU_MAX_NS)
     ap.add_argument("--n-taus", type=int, default=N_TAUS)
+    ap.add_argument("--layout", choices=["serial", "rrc-packed"], default=LAYOUT)
+    ap.add_argument("--rrc-orbit-reps", type=int, default=RRC_ORBIT_REPS)
     ap.add_argument(
         "--synthetic-effect",
         type=float,
