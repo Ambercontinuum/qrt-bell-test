@@ -3,7 +3,7 @@
 
 **Theory under test:** Quantum Resonance Theory (Anson 2024, DOI 10.5281/ZENODO.15105902)
 **Prereg author:** Amber Anson, AmberContinuum Research
-**Status:** DRAFT — do not freeze until the execution script, device constraints, and waveform audit are finalized
+**Status:** Frozen-ready draft — execution script uploaded with SHA-256 hash before registration freeze
 
 This draft follows the structure of `docs/qrt2_osf_fields.md`, but targets the
 source paper's most explicit quantum-computing prediction: a 5-10% coherence
@@ -39,7 +39,7 @@ Primary contrast:
 
 G_T2 = T2*(10 MHz driven) / mean(T2*(controls)) - 1
 
-Controls will include an undriven Ramsey condition and off-resonance driven conditions. The final control set will be frozen in the execution script before registration; current script defaults are 1, 5, 15, and 25 MHz, selected to avoid the clearest alias traps identified in the earlier review, subject to the waveform audit's aliasing constraints.
+Controls include an undriven Ramsey condition and off-resonance driven conditions. The frozen script uses off-resonance controls at 1, 5, 15, and 25 MHz, selected to avoid the clearest alias traps identified in the earlier review, subject to the waveform audit's aliasing constraints.
 
 ---
 
@@ -97,14 +97,14 @@ Preparation and measurement:
 Conditions:
 
 - Theory-designated resonance drive: 10 MHz.
-- Off-resonance driven controls: current script defaults are 1, 5, 15, and 25 MHz, finalized only if the waveform audit shows they are not aliased into misleadingly equivalent discrete schedules.
+- Off-resonance driven controls: the frozen script uses 1, 5, 15, and 25 MHz, finalized by the uploaded script and subject to the waveform audit showing they are not aliased into misleadingly equivalent discrete schedules.
 - Undriven reference: identical Ramsey delays with no resonance drive.
 
 Ramsey delays:
 
-- A fixed grid of tau values spanning the backend's expected T2* scale will be frozen in the execution script.
-- The grid must include enough points before and after the expected coherence decay knee to fit T2* without choosing a fitting window after seeing data.
-- Candidate starting grid: 0 to 2.5 times the backend-reported T2* in 21-31 delay points, capped by backend duration limits.
+- The frozen script uses 25 tau values linearly spaced from 0 ns to 12,000 ns.
+- This grid is fixed before confirmatory execution; no fitting-window selection occurs after seeing data.
+- If hardware duration constraints prevent this grid from running, the session aborts before confirmatory data collection and any revised grid requires a new script hash or disclosed amendment before execution.
 
 Drive implementation:
 
@@ -139,8 +139,7 @@ Hardware:
 
 Shots:
 
-- Planned starting value: 32,000 shots per circuit, based on the initial synthetic power check.
-- Final shot count will be frozen after a simulator/power check and before OSF registration.
+- Frozen value: 32,000 shots per circuit, based on the initial synthetic power check.
 
 Data:
 
@@ -156,15 +155,15 @@ No measurement-error mitigation, dynamical decoupling, twirling, zero-noise extr
 
 ### Sample Size
 
-The final sample size will be frozen after the execution script and simulator/power check are complete.
+The sample size is fixed in the uploaded execution script.
 
 Planned structure:
 
-- Conditions: 1 resonance condition, 4 off-resonance candidates, 1 undriven reference.
-- Ramsey delays: 21-31 tau points.
+- Conditions: 1 resonance condition, 4 off-resonance driven controls, 1 undriven reference.
+- Ramsey delays: 25 tau points, linearly spaced from 0 ns to 12,000 ns.
 - Shots: planned 32,000 per circuit.
 
-At 6 conditions x 25 delay points x 32,000 shots, the planned session contains 4,800,000 shots. If this exceeds access-tier constraints, the preregistration will reduce the number of control frequencies or delay points before freezing; no confirmatory hardware data will be collected until the final design is fixed.
+At 6 conditions x 25 delay points x 32,000 shots, the planned session contains 4,800,000 shots. If this exceeds access-tier constraints, the session will not begin as confirmatory data collection; any reduced design requires a new script hash or disclosed amendment before execution.
 
 ---
 
@@ -172,7 +171,7 @@ At 6 conditions x 25 delay points x 32,000 shots, the planned session contains 4
 
 The paper's predicted coherence effect is large by Ramsey standards: +5-10% in T2. The design aims to resolve the lower bound of that prediction, +5%, rather than merely detect any nonzero effect.
 
-The initial synthetic power check at 8,000 shots per circuit was too wide to separate the null from the +5% decision threshold. At 32,000 shots per circuit, the deterministic synthetic null produced G_T2 = +0.00% with a 95% CI of approximately [-2.92%, +2.99%], while a synthetic +5% effect produced G_T2 = +5.01% with a 95% CI of approximately [+1.90%, +8.21%]. These checks are design calibration only; the final preregistration should either retain this powered design or reduce the number of conditions/delays before freeze if hardware limits require it.
+The initial synthetic power check at 8,000 shots per circuit was too wide to separate the null from the +5% decision threshold. At 32,000 shots per circuit, the deterministic synthetic null produced G_T2 = +0.00% with a 95% CI of approximately [-2.92%, +2.99%], while a synthetic +5% effect produced G_T2 = +5.01% with a 95% CI of approximately [+1.90%, +8.21%]. These checks are design calibration only.
 
 The simulator/power check is a design calibration only. It carries no evidential weight for QRT because it implements standard quantum mechanics by construction.
 
@@ -262,11 +261,11 @@ Only G_T2 carries confirmatory inferential weight.
 
 ### Statistical Models
 
-For each condition, fit a fixed Ramsey decay model to the observed probabilities:
+For each condition, fit the fixed exponential Ramsey/T2-style decay model used by the uploaded script to the observed probabilities:
 
-P1(tau) = C + A exp(-tau / T2*) cos(2 pi f tau + phi)
+P(tau) = C + A exp(-tau / T2*)
 
-The exact fitting method, parameter bounds, initial values, and failure behavior will be frozen in the execution script. Planned fitting method: nonlinear least squares or maximum-likelihood binomial fit using raw counts.
+The exact fitting method, parameter bounds, initial values, and failure behavior are fixed in the uploaded execution script. The frozen script uses nonlinear least squares on probabilities derived from raw counts.
 
 Uncertainty:
 
@@ -370,9 +369,9 @@ The theory under test and this preregistration share an author. The draft was pr
 
 ### Attachments To Upload With Registration
 
-To be generated before freeze:
+Uploaded or recorded before freeze:
 
-- `qrt_ramsey_test.py` or equivalent frozen execution/analysis script.
-- SHA-256 hash of the frozen script.
+- `tests/qrt_ramsey_test.py` frozen execution/analysis script.
+- SHA-256: `12f51da5c2c733a60d4461411a4f80d8aba688439d337ede8833db1d19ea816a`
 - Simulator/power-check output, labeled non-evidential.
 - Waveform-audit output from the frozen script before hardware execution.
