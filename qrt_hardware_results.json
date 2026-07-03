@@ -1,0 +1,687 @@
+{
+  "job_id": "d93t71fu62ks7395a110",
+  "backend": "ibm_marrakesh",
+  "executed_order": [
+    [
+      5,
+      "YY",
+      "C"
+    ],
+    [
+      50,
+      "ZZ",
+      "D"
+    ],
+    [
+      20,
+      "ZZ",
+      "C"
+    ],
+    [
+      20,
+      "YY",
+      "C"
+    ],
+    [
+      10,
+      "XX",
+      "D"
+    ],
+    [
+      1,
+      "XX",
+      "C"
+    ],
+    [
+      1,
+      "ZZ",
+      "C"
+    ],
+    [
+      5,
+      "XX",
+      "C"
+    ],
+    [
+      10,
+      "YY",
+      "D"
+    ],
+    [
+      50,
+      "XX",
+      "C"
+    ],
+    [
+      10,
+      "XX",
+      "C"
+    ],
+    [
+      10,
+      "ZZ",
+      "D"
+    ],
+    [
+      50,
+      "XX",
+      "D"
+    ],
+    [
+      50,
+      "YY",
+      "D"
+    ],
+    [
+      50,
+      "ZZ",
+      "C"
+    ],
+    [
+      20,
+      "XX",
+      "C"
+    ],
+    [
+      1,
+      "YY",
+      "D"
+    ],
+    [
+      5,
+      "ZZ",
+      "D"
+    ],
+    [
+      1,
+      "YY",
+      "C"
+    ],
+    [
+      20,
+      "ZZ",
+      "D"
+    ],
+    [
+      20,
+      "YY",
+      "D"
+    ],
+    [
+      5,
+      "XX",
+      "D"
+    ],
+    [
+      5,
+      "YY",
+      "D"
+    ],
+    [
+      10,
+      "ZZ",
+      "C"
+    ],
+    [
+      50,
+      "YY",
+      "C"
+    ],
+    [
+      1,
+      "ZZ",
+      "D"
+    ],
+    [
+      1,
+      "XX",
+      "D"
+    ],
+    [
+      10,
+      "YY",
+      "C"
+    ],
+    [
+      20,
+      "XX",
+      "D"
+    ],
+    [
+      5,
+      "ZZ",
+      "C"
+    ]
+  ],
+  "transpiled_durations": [
+    {
+      "name": "circuit-41",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-42",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-43",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-44",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-45",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-46",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-47",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-48",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-49",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-50",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-51",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-52",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-53",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-54",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-55",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-56",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-57",
+      "duration": null,
+      "depth": 86
+    },
+    {
+      "name": "circuit-58",
+      "duration": null,
+      "depth": 68
+    },
+    {
+      "name": "circuit-59",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-60",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-61",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-62",
+      "duration": null,
+      "depth": 71
+    },
+    {
+      "name": "circuit-63",
+      "duration": null,
+      "depth": 70
+    },
+    {
+      "name": "circuit-64",
+      "duration": null,
+      "depth": 48
+    },
+    {
+      "name": "circuit-65",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-66",
+      "duration": null,
+      "depth": 84
+    },
+    {
+      "name": "circuit-67",
+      "duration": null,
+      "depth": 87
+    },
+    {
+      "name": "circuit-68",
+      "duration": null,
+      "depth": 50
+    },
+    {
+      "name": "circuit-69",
+      "duration": null,
+      "depth": 51
+    },
+    {
+      "name": "circuit-70",
+      "duration": null,
+      "depth": 48
+    }
+  ],
+  "raw_counts": [
+    {
+      "freq_mhz": 5,
+      "basis": "YY",
+      "arm": "C",
+      "counts": {
+        "01": 3705,
+        "11": 302,
+        "10": 3667,
+        "00": 326
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "ZZ",
+      "arm": "D",
+      "counts": {
+        "11": 3764,
+        "00": 3984,
+        "10": 129,
+        "01": 123
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "ZZ",
+      "arm": "C",
+      "counts": {
+        "11": 3744,
+        "00": 4021,
+        "10": 108,
+        "01": 127
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "YY",
+      "arm": "C",
+      "counts": {
+        "10": 3665,
+        "01": 3722,
+        "11": 291,
+        "00": 322
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "XX",
+      "arm": "D",
+      "counts": {
+        "10": 332,
+        "00": 3795,
+        "11": 3567,
+        "01": 306
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "XX",
+      "arm": "C",
+      "counts": {
+        "11": 3663,
+        "00": 3743,
+        "01": 281,
+        "10": 313
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "ZZ",
+      "arm": "C",
+      "counts": {
+        "00": 4023,
+        "11": 3744,
+        "01": 116,
+        "10": 117
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "XX",
+      "arm": "C",
+      "counts": {
+        "01": 311,
+        "11": 3487,
+        "00": 3848,
+        "10": 354
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "YY",
+      "arm": "D",
+      "counts": {
+        "01": 3690,
+        "10": 3658,
+        "00": 335,
+        "11": 317
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "XX",
+      "arm": "C",
+      "counts": {
+        "01": 273,
+        "11": 3566,
+        "00": 3823,
+        "10": 338
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "XX",
+      "arm": "C",
+      "counts": {
+        "11": 3602,
+        "00": 3748,
+        "01": 325,
+        "10": 325
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "ZZ",
+      "arm": "D",
+      "counts": {
+        "11": 3685,
+        "00": 4061,
+        "10": 133,
+        "01": 121
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "XX",
+      "arm": "D",
+      "counts": {
+        "00": 3813,
+        "11": 3573,
+        "10": 315,
+        "01": 299
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "YY",
+      "arm": "D",
+      "counts": {
+        "10": 3686,
+        "01": 3689,
+        "00": 344,
+        "11": 281
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "ZZ",
+      "arm": "C",
+      "counts": {
+        "11": 3700,
+        "00": 4052,
+        "01": 123,
+        "10": 125
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "XX",
+      "arm": "C",
+      "counts": {
+        "11": 3727,
+        "00": 3672,
+        "10": 287,
+        "01": 314
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "YY",
+      "arm": "D",
+      "counts": {
+        "01": 3712,
+        "10": 3609,
+        "11": 309,
+        "00": 370
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "ZZ",
+      "arm": "D",
+      "counts": {
+        "11": 3763,
+        "00": 4001,
+        "10": 113,
+        "01": 123
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "YY",
+      "arm": "C",
+      "counts": {
+        "01": 3625,
+        "10": 3686,
+        "11": 335,
+        "00": 354
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "ZZ",
+      "arm": "D",
+      "counts": {
+        "00": 3993,
+        "11": 3773,
+        "01": 116,
+        "10": 118
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "YY",
+      "arm": "D",
+      "counts": {
+        "10": 3648,
+        "01": 3703,
+        "11": 292,
+        "00": 357
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "XX",
+      "arm": "D",
+      "counts": {
+        "00": 3829,
+        "11": 3611,
+        "01": 268,
+        "10": 292
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "YY",
+      "arm": "D",
+      "counts": {
+        "11": 309,
+        "10": 3631,
+        "01": 3723,
+        "00": 337
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "ZZ",
+      "arm": "C",
+      "counts": {
+        "00": 4009,
+        "11": 3742,
+        "10": 126,
+        "01": 123
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "YY",
+      "arm": "C",
+      "counts": {
+        "10": 3611,
+        "01": 3761,
+        "11": 301,
+        "00": 327
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "ZZ",
+      "arm": "D",
+      "counts": {
+        "11": 3679,
+        "00": 4109,
+        "01": 119,
+        "10": 93
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "XX",
+      "arm": "D",
+      "counts": {
+        "00": 3839,
+        "11": 3495,
+        "10": 314,
+        "01": 352
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "YY",
+      "arm": "C",
+      "counts": {
+        "01": 3683,
+        "10": 3689,
+        "00": 321,
+        "11": 307
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "XX",
+      "arm": "D",
+      "counts": {
+        "00": 3791,
+        "01": 323,
+        "11": 3572,
+        "10": 314
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "ZZ",
+      "arm": "C",
+      "counts": {
+        "00": 4041,
+        "11": 3746,
+        "10": 109,
+        "01": 104
+      }
+    }
+  ],
+  "results": {
+    "1": {
+      "F_control": 0.90525,
+      "F_drive": 0.9026875,
+      "rel_gain": -0.0028383115525678127,
+      "ci95": [
+        -0.010130595556041996,
+        0.004081738651139172
+      ]
+    },
+    "5": {
+      "F_control": 0.905875,
+      "F_drive": 0.909875,
+      "rel_gain": 0.004437435503503607,
+      "ci95": [
+        -0.002670108492824155,
+        0.011481435093864458
+      ]
+    },
+    "10": {
+      "F_control": 0.9045624999999999,
+      "F_drive": 0.9035000000000001,
+      "rel_gain": -0.0011613113216993021,
+      "ci95": [
+        -0.008590120927420878,
+        0.006241775161587648
+      ]
+    },
+    "20": {
+      "F_control": 0.9094375,
+      "F_drive": 0.9049999999999999,
+      "rel_gain": -0.004887187129771095,
+      "ci95": [
+        -0.01201664671005793,
+        0.0024111408496307607
+      ]
+    },
+    "50": {
+      "F_control": 0.9070624999999999,
+      "F_drive": 0.9068125,
+      "rel_gain": -0.0003054393397029755,
+      "ci95": [
+        -0.007399566713574795,
+        0.006841897450245068
+      ]
+    }
+  }
+}
