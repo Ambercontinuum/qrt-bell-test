@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-QRT Ramsey/T2 Resonance Test (Test #3 draft)
+QRT Ramsey/T2 Resonance Test (Test #4 draft)
 ============================================
 
 Draft execution + analysis script for the Ramsey/T2 preregistration in
-docs/qrt3_ramsey_prereg.md.
+docs/qrt4_balanced_packed_ramsey_prereg.md.
 
 This targets the source paper's explicit quantum-computing prediction:
 superconducting-qubit coherence should increase by 5-10% at wr = 10 MHz,
@@ -15,9 +15,9 @@ Core safeguards:
   * The 10 MHz schedule must not collapse to zero-crossing samples.
   * Off-resonance controls must not alias into the same discrete waveform.
   * IBM execution uses physical fractional RX pulses when available.
-  * The default IBM layout uses an RRC-native orbit-packed workload: all
-    conditions are run in parallel across qubits, with condition-to-qubit
-    rotations sampling hardware-position bias while cutting PUB count.
+  * The default IBM layout uses a balanced packed workload: all conditions
+    are run in parallel across qubits, with condition-to-qubit rotations
+    sampling hardware-position bias while cutting PUB count.
 
 Usage:
   python tests/qrt_ramsey_test.py --backend synthetic
@@ -51,8 +51,8 @@ SHOTS = 19500
 N_BOOT = 1000
 SEED = 20260704
 THRESHOLD = 0.05
-LAYOUT = "rrc-packed"
-RRC_ORBIT_REPS = 2
+LAYOUT = "balanced-packed"
+BALANCED_REPS = 2
 
 RESULTS_DIR = Path("results")
 
@@ -178,13 +178,13 @@ def ramsey_drive_circuit(
     return qc
 
 
-def rrc_orbit_assignments(
-    orbit_reps: int,
+def balanced_assignments(
+    reps_requested: int,
 ) -> list[list[tuple[str, int, bool]]]:
-    """Condition-to-qubit orbit reps, following RRC representative rotation."""
+    """Condition-to-qubit assignment rotations for balanced packed execution."""
     base = condition_specs()
     n = len(base)
-    reps = max(1, min(int(orbit_reps), n))
+    reps = max(1, min(int(reps_requested), n))
     assignments = []
     seen = set()
     for rep in range(reps):
@@ -197,7 +197,7 @@ def rrc_orbit_assignments(
     return assignments
 
 
-def rrc_packed_ramsey_circuit(
+def packed_ramsey_circuit(
     tau_ns: int,
     assignment: list[tuple[str, int, bool]],
     drive_step_ns: int = DRIVE_STEP_NS,
@@ -389,8 +389,8 @@ def synthetic_counts(
 def run_synthetic(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     taus = tau_grid_ns(args.tau_max_ns, args.n_taus)
     effective_shots = args.shots
-    if args.layout == "rrc-packed":
-        effective_shots *= len(rrc_orbit_assignments(args.rrc_orbit_reps))
+    if args.layout == "balanced-packed":
+        effective_shots *= len(balanced_assignments(args.balance_reps))
     raw = synthetic_counts(
         taus,
         effective_shots,
@@ -414,7 +414,7 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
 
     service = QiskitRuntimeService()
-    min_qubits = len(condition_specs()) if args.layout == "rrc-packed" else 1
+    min_qubits = len(condition_specs()) if args.layout == "balanced-packed" else 1
     name = args.device or service.least_busy(
         operational=True, simulator=False, min_num_qubits=min_qubits
     ).name
@@ -449,19 +449,19 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
             for tau in taus
         ]
     else:
-        assignments = rrc_orbit_assignments(args.rrc_orbit_reps)
+        assignments = balanced_assignments(args.balance_reps)
         pubs = [
             {
-                "layout": "rrc-packed",
+                "layout": "balanced-packed",
                 "tau_ns": tau,
-                "orbit_rep": orbit_rep,
+                "balance_rep": balance_rep,
                 "assignment": [
                     {"condition": c, "freq_mhz": f, "driven": d, "qubit_index": q}
                     for q, (c, f, d) in enumerate(assignment)
                 ],
             }
             for tau in taus
-            for orbit_rep, assignment in enumerate(assignments)
+            for balance_rep, assignment in enumerate(assignments)
         ]
     rng.shuffle(pubs)
     executed_order = pubs
@@ -485,8 +485,8 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
                 (item["condition"], item["freq_mhz"], item["driven"])
                 for item in pub["assignment"]
             ]
-            qc = rrc_packed_ramsey_circuit(tau, assignment, args.drive_step_ns)
-            physicality_subject = f"rrc-packed/orbit={pub['orbit_rep']}"
+            qc = packed_ramsey_circuit(tau, assignment, args.drive_step_ns)
+            physicality_subject = f"balanced-packed/rep={pub['balance_rep']}"
             needs_rx = tau > 0 and any(item["driven"] for item in pub["assignment"])
         tqc = pm.run(qc)
         ops = dict(tqc.count_ops())
@@ -549,15 +549,15 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
                     "driven": driven,
                     "tau_ns": tau,
                     "counts": {"0": 0, "1": 0},
-                    "rrc_orbit_reps_observed": 0,
-                    "source_layout": "rrc-packed",
+                    "balance_reps_observed": 0,
+                    "source_layout": "balanced-packed",
                 },
             )
             row["counts"]["0"] += marg["0"]
             row["counts"]["1"] += marg["1"]
-            row["rrc_orbit_reps_observed"] += 1
+            row["balance_reps_observed"] += 1
 
-    if args.layout == "rrc-packed":
+    if args.layout == "balanced-packed":
         raw = list(aggregated.values())
         raw.sort(key=lambda r: (r["condition"], r["tau_ns"]))
 
@@ -586,7 +586,7 @@ def frozen_parameters(args: argparse.Namespace) -> dict[str, Any]:
         "n_taus": args.n_taus,
         "shots": args.shots,
         "layout": args.layout,
-        "rrc_orbit_reps": args.rrc_orbit_reps,
+        "balance_reps": args.balance_reps,
         "conditions": [
             {"condition": c, "freq_mhz": f, "driven": d}
             for c, f, d in condition_specs()
@@ -594,12 +594,12 @@ def frozen_parameters(args: argparse.Namespace) -> dict[str, Any]:
         "planned_pubs": (
             args.n_taus * len(condition_specs())
             if args.layout == "serial"
-            else args.n_taus * len(rrc_orbit_assignments(args.rrc_orbit_reps))
+            else args.n_taus * len(balanced_assignments(args.balance_reps))
         ),
         "effective_shots_per_condition_tau": (
             args.shots
             if args.layout == "serial"
-            else args.shots * len(rrc_orbit_assignments(args.rrc_orbit_reps))
+            else args.shots * len(balanced_assignments(args.balance_reps))
         ),
         "n_boot": args.n_boot,
         "seed": args.seed,
@@ -618,8 +618,8 @@ def main() -> None:
     ap.add_argument("--drive-step-ns", type=int, default=DRIVE_STEP_NS)
     ap.add_argument("--tau-max-ns", type=int, default=TAU_MAX_NS)
     ap.add_argument("--n-taus", type=int, default=N_TAUS)
-    ap.add_argument("--layout", choices=["serial", "rrc-packed"], default=LAYOUT)
-    ap.add_argument("--rrc-orbit-reps", type=int, default=RRC_ORBIT_REPS)
+    ap.add_argument("--layout", choices=["serial", "balanced-packed"], default=LAYOUT)
+    ap.add_argument("--balance-reps", type=int, default=BALANCED_REPS)
     ap.add_argument(
         "--synthetic-effect",
         type=float,
@@ -640,7 +640,7 @@ def main() -> None:
 
     taus = tau_grid_ns(args.tau_max_ns, args.n_taus)
     audit = waveform_audit(FREQS_MHZ, taus, args.drive_step_ns)
-    audit_path = out_dir / "qrt3_waveform_audit.json"
+    audit_path = out_dir / "qrt4_waveform_audit.json"
     audit_path.write_text(json.dumps(audit, indent=2), encoding="utf-8")
     print(f"[audit] saved -> {audit_path}")
     if not audit["passed"]:
@@ -652,10 +652,10 @@ def main() -> None:
 
     if args.backend == "synthetic":
         out = run_synthetic(args, audit)
-        fname = out_dir / "qrt3_sim_results.json"
+        fname = out_dir / "qrt4_sim_results.json"
     else:
         out = run_ibm(args, audit)
-        fname = out_dir / "qrt3_hardware_results.json"
+        fname = out_dir / "qrt4_hardware_results.json"
 
     fname.write_text(json.dumps(out, indent=2, default=str), encoding="utf-8")
     analysis = out["analysis"]
