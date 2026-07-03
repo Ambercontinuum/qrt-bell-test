@@ -3,7 +3,7 @@
 
 **Theory under test:** Quantum Resonance Theory (Anson 2024, DOI 10.5281/ZENODO.15105902)
 **Prereg author:** Amber Anson, AmberContinuum Research
-**Status:** Frozen-ready draft — execution script uploaded with SHA-256 hash before registration freeze
+**Status:** Resource-constrained amendment — execution script updated after IBM runtime rejection/cancellation of the larger frozen design
 
 This draft follows the structure of `docs/qrt2_osf_fields.md`, but targets the
 source paper's most explicit quantum-computing prediction: a 5-10% coherence
@@ -102,7 +102,7 @@ Conditions:
 
 Ramsey delays:
 
-- The frozen script uses 25 tau values linearly spaced from 0 ns to 12,000 ns.
+- The amended script uses 15 tau values linearly spaced from 0 ns to 12,000 ns.
 - This grid is fixed before confirmatory execution; no fitting-window selection occurs after seeing data.
 - If hardware duration constraints prevent this grid from running, the session aborts before confirmatory data collection and any revised grid requires a new script hash or disclosed amendment before execution.
 
@@ -139,7 +139,7 @@ Hardware:
 
 Shots:
 
-- Frozen value: 32,000 shots per circuit, based on the initial synthetic power check.
+- Amended frozen value: 19,500 shots per circuit, reduced from 32,000 after IBM estimated the original design above the available Open Plan runtime.
 
 Data:
 
@@ -155,15 +155,15 @@ No measurement-error mitigation, dynamical decoupling, twirling, zero-noise extr
 
 ### Sample Size
 
-The sample size is fixed in the uploaded execution script.
+The amended sample size is fixed in the uploaded execution script.
 
 Planned structure:
 
 - Conditions: 1 resonance condition, 4 off-resonance driven controls, 1 undriven reference.
-- Ramsey delays: 25 tau points, linearly spaced from 0 ns to 12,000 ns.
-- Shots: planned 32,000 per circuit.
+- Ramsey delays: 15 tau points, linearly spaced from 0 ns to 12,000 ns.
+- Shots: planned 19,500 per circuit.
 
-At 6 conditions x 25 delay points x 32,000 shots, the planned session contains 4,800,000 shots. If this exceeds access-tier constraints, the session will not begin as confirmatory data collection; any reduced design requires a new script hash or disclosed amendment before execution.
+At 6 conditions x 15 delay points x 19,500 shots, the amended session contains 1,755,000 shots. This preserves the original conditions, physical-drive implementation, endpoint, model, and decision rule while reducing runtime enough to fit IBM Open Plan constraints.
 
 ---
 
@@ -171,7 +171,13 @@ At 6 conditions x 25 delay points x 32,000 shots, the planned session contains 4
 
 The paper's predicted coherence effect is large by Ramsey standards: +5-10% in T2. The design aims to resolve the lower bound of that prediction, +5%, rather than merely detect any nonzero effect.
 
-The initial synthetic power check at 8,000 shots per circuit was too wide to separate the null from the +5% decision threshold. At 32,000 shots per circuit, the deterministic synthetic null produced G_T2 = +0.00% with a 95% CI of approximately [-2.92%, +2.99%], while a synthetic +5% effect produced G_T2 = +5.01% with a 95% CI of approximately [+1.90%, +8.21%]. These checks are design calibration only.
+The initial synthetic power check at 8,000 shots per circuit was too wide to separate the null from the +5% decision threshold. At 32,000 shots per circuit, the deterministic synthetic null produced G_T2 = +0.00% with a 95% CI of approximately [-2.92%, +2.99%], while a synthetic +5% effect produced G_T2 = +5.01% with a 95% CI of approximately [+1.90%, +8.21%]. IBM estimated that design above the available runtime. The amended 19,500-shot, 15-delay design is a resource-constrained coding/platform adaptation, not a hypothesis change.
+
+Amended synthetic checks at 19,500 shots and 15 tau points:
+
+- Null synthetic: G_T2 = +0.00%, 95% CI approximately [-5.36%, +4.95%], decision = falsified as specified.
+- +5% synthetic effect: G_T2 = +5.03%, 95% CI approximately [-0.83%, +10.59%], decision = inconclusive.
+- +6% synthetic effect: G_T2 = +6.02%, 95% CI approximately [+0.82%, +11.20%], decision = QRT-consistent escalation.
 
 The simulator/power check is a design calibration only. It carries no evidential weight for QRT because it implements standard quantum mechanics by construction.
 
@@ -355,6 +361,13 @@ Relationship to prior tests:
 - Test #2 tested physical fractional RX drive across frequencies. It was a stronger physical-drive test but remained a discrete approximation with aliasing/sampling limitations relative to the paper's continuous Hamiltonian term.
 - This Test #3 is a new preregistration focused on the paper's explicit Ramsey/T2 prediction. It keeps Test #2's physical-drive correction while changing the endpoint to the source paper's Ramsey/T2 claim. It does not reinterpret the prior datasets and does not rescue their preregistered verdicts.
 
+Resource-constrained amendment:
+
+- The originally uploaded 32,000-shot, 25-delay design submitted to IBM as job `d93vf0tgc6cc73fefs5g` but was cancelled before counts were returned after IBM estimated runtime above the available Open Plan allocation.
+- A 19,500-shot, 25-delay amended attempt submitted as job `d93vrmmvtlqs73ftmpig` was also cancelled before counts were returned, with IBM estimating approximately 11 minutes.
+- The current amendment reduces tau points from 25 to 15 and keeps 19,500 shots per circuit. This reduces circuit count from 150 to 90 while preserving all drive conditions, the physical fractional-RX implementation, the waveform audit, the primary endpoint, and the decision rule.
+- No counts were returned from the cancelled attempts. They are non-evidential resource/cancellation attempts, not confirmatory datasets.
+
 Known limitations:
 
 - IBM public hardware may not support a literal continuous 10 MHz tone through the circuit interface. If the implementation uses discrete pulses, the result binds that discrete approximation, not every possible continuous-drive realization.
@@ -372,6 +385,6 @@ The theory under test and this preregistration share an author. The draft was pr
 Uploaded or recorded before freeze:
 
 - `tests/qrt_ramsey_test.py` frozen execution/analysis script.
-- SHA-256: `12f51da5c2c733a60d4461411a4f80d8aba688439d337ede8833db1d19ea816a`
+- SHA-256: `95e98218c9671f37758dc45da05b06b7103b66b1618695b968f2898858fdf6c0`
 - Simulator/power-check output, labeled non-evidential.
 - Waveform-audit output from the frozen script before hardware execution.
