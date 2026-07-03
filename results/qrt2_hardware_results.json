@@ -1,0 +1,491 @@
+{
+  "executed_order": [
+    [
+      20,
+      "XX",
+      "DRIVEN"
+    ],
+    [
+      10,
+      "XX",
+      "DRIVEN"
+    ],
+    [
+      5,
+      "XX",
+      "DRIVEN"
+    ],
+    [
+      1,
+      "XX",
+      "DRIVEN"
+    ],
+    [
+      1,
+      "ZZ",
+      "DRIVEN"
+    ],
+    [
+      10,
+      "ZZ",
+      "DRIVEN"
+    ],
+    [
+      5,
+      "ZZ",
+      "DRIVEN"
+    ],
+    [
+      0,
+      "ZZ",
+      "REF"
+    ],
+    [
+      1,
+      "YY",
+      "DRIVEN"
+    ],
+    [
+      20,
+      "YY",
+      "DRIVEN"
+    ],
+    [
+      50,
+      "YY",
+      "DRIVEN"
+    ],
+    [
+      10,
+      "YY",
+      "DRIVEN"
+    ],
+    [
+      50,
+      "ZZ",
+      "DRIVEN"
+    ],
+    [
+      0,
+      "YY",
+      "REF"
+    ],
+    [
+      50,
+      "XX",
+      "DRIVEN"
+    ],
+    [
+      5,
+      "YY",
+      "DRIVEN"
+    ],
+    [
+      0,
+      "XX",
+      "REF"
+    ],
+    [
+      20,
+      "ZZ",
+      "DRIVEN"
+    ]
+  ],
+  "fidelities": {
+    "1": 0.859375,
+    "5": 0.86275,
+    "10": 0.8622500000000001,
+    "20": 0.847375,
+    "50": 0.8714375
+  },
+  "fidelity_ref": 0.9060625,
+  "G_res": 0.0023139513315774247,
+  "ci95": [
+    -0.004950602779229684,
+    0.009269697891699227
+  ],
+  "job_id": "d93tv0mvtlqs73ftkh80",
+  "backend": "ibm_marrakesh",
+  "raw_counts": [
+    {
+      "freq_mhz": 20,
+      "basis": "XX",
+      "arm": "DRIVEN",
+      "counts": {
+        "00": 3689,
+        "01": 430,
+        "11": 3458,
+        "10": 423
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "XX",
+      "arm": "DRIVEN",
+      "counts": {
+        "10": 425,
+        "00": 3641,
+        "11": 3505,
+        "01": 429
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "XX",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3516,
+        "10": 460,
+        "00": 3604,
+        "01": 420
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "XX",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3425,
+        "00": 3713,
+        "10": 454,
+        "01": 408
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "ZZ",
+      "arm": "DRIVEN",
+      "counts": {
+        "00": 4006,
+        "11": 3571,
+        "01": 171,
+        "10": 252
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "ZZ",
+      "arm": "DRIVEN",
+      "counts": {
+        "00": 4020,
+        "11": 3537,
+        "10": 286,
+        "01": 157
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "ZZ",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3545,
+        "00": 4054,
+        "10": 267,
+        "01": 134
+      }
+    },
+    {
+      "freq_mhz": 0,
+      "basis": "ZZ",
+      "arm": "REF",
+      "counts": {
+        "11": 3600,
+        "00": 4039,
+        "01": 123,
+        "10": 238
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "YY",
+      "arm": "DRIVEN",
+      "counts": {
+        "01": 3553,
+        "11": 406,
+        "10": 3482,
+        "00": 559
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "YY",
+      "arm": "DRIVEN",
+      "counts": {
+        "01": 3493,
+        "10": 3507,
+        "00": 577,
+        "11": 423
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "YY",
+      "arm": "DRIVEN",
+      "counts": {
+        "10": 3587,
+        "00": 464,
+        "01": 3578,
+        "11": 371
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "YY",
+      "arm": "DRIVEN",
+      "counts": {
+        "01": 3580,
+        "10": 3513,
+        "11": 421,
+        "00": 486
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "ZZ",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3573,
+        "00": 4016,
+        "01": 162,
+        "10": 249
+      }
+    },
+    {
+      "freq_mhz": 0,
+      "basis": "YY",
+      "arm": "REF",
+      "counts": {
+        "00": 311,
+        "01": 3768,
+        "10": 3644,
+        "11": 277
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "XX",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3573,
+        "00": 3616,
+        "01": 426,
+        "10": 385
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "YY",
+      "arm": "DRIVEN",
+      "counts": {
+        "10": 3506,
+        "01": 3579,
+        "11": 424,
+        "00": 491
+      }
+    },
+    {
+      "freq_mhz": 0,
+      "basis": "XX",
+      "arm": "REF",
+      "counts": {
+        "10": 295,
+        "11": 3639,
+        "00": 3807,
+        "01": 259
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "ZZ",
+      "arm": "DRIVEN",
+      "counts": {
+        "11": 3437,
+        "00": 3974,
+        "10": 339,
+        "01": 250
+      }
+    }
+  ],
+  "physicality_log": [
+    {
+      "freq_mhz": 20,
+      "basis": "XX",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 10,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "XX",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 10,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "XX",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 10,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "XX",
+      "ops": {
+        "delay": 80,
+        "rx": 80,
+        "rz": 10,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "ZZ",
+      "ops": {
+        "delay": 80,
+        "rx": 80,
+        "rz": 6,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "ZZ",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 6,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "ZZ",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 6,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 1,
+      "basis": "YY",
+      "ops": {
+        "delay": 80,
+        "rx": 80,
+        "rz": 8,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "YY",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 8,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "YY",
+      "ops": {
+        "delay": 80,
+        "rx": 66,
+        "rz": 8,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 10,
+      "basis": "YY",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 8,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "ZZ",
+      "ops": {
+        "delay": 80,
+        "rx": 64,
+        "rz": 6,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 50,
+      "basis": "XX",
+      "ops": {
+        "delay": 80,
+        "rx": 66,
+        "rz": 10,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 5,
+      "basis": "YY",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 8,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    },
+    {
+      "freq_mhz": 20,
+      "basis": "ZZ",
+      "ops": {
+        "delay": 80,
+        "rx": 78,
+        "rz": 6,
+        "sx": 3,
+        "measure": 2,
+        "cz": 1
+      }
+    }
+  ]
+}
