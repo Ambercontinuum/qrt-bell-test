@@ -1,0 +1,41 @@
+{
+  "purpose": "Threshold calibration for v4.1 preregistration: maps the paper's 5-10% T2 claim into envelope-area units. NON-EVIDENTIAL (synthetic, standard-QM generator). The +1.1% decision threshold is the mapped minimum claim (+5% T2).",
+  "runs": {
+    "injected_t2_effect_0.0": {
+      "G_A": 0.005226385989405669,
+      "ci95": [
+        -1.0522693253073373e-05,
+        0.010298739982217132
+      ],
+      "decision": "FALSIFIED_AS_SPECIFIED",
+      "n_boot": 2000
+    },
+    "injected_t2_effect_0.05": {
+      "G_A": 0.01652239859283164,
+      "ci95": [
+        0.011667104007766174,
+        0.02194050386916143
+      ],
+      "decision": "QRT_CONSISTENT_ESCALATE",
+      "n_boot": 2000
+    },
+    "injected_t2_effect_0.075": {
+      "G_A": 0.02223562727473844,
+      "ci95": [
+        0.017293764652388233,
+        0.02757549357668505
+      ],
+      "decision": "QRT_CONSISTENT_ESCALATE",
+      "n_boot": 2000
+    },
+    "injected_t2_effect_0.10": {
+      "G_A": 0.026553500785872427,
+      "ci95": [
+        0.02140214986800952,
+        0.03173025714060544
+      ],
+      "decision": "QRT_CONSISTENT_ESCALATE",
+      "n_boot": 2000
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "purpose": "v4.2 amplitude-scaling micro-test calibration. PRIMARY: G_scale = 10MHz@10xR0 vs neighbor mean (9,11 MHz @1x). Drive-coupled mechanism predicts strong scaling; artifacts do not. Threshold +3%. NON-EVIDENTIAL.",
+  "runs": {
+    "effect_0.0": {
+      "G_scale_10x": 0.006095963805214831,
+      "ci95": [
+        -0.007384955808886625,
+        0.020049478139533533
+      ],
+      "G_rep_1x": 0.013168234313608697,
+      "G_phase_rand": 0.0012144302893201354,
+      "decision": "DOES_NOT_SCALE"
+    },
+    "effect_0.05": {
+      "G_scale_10x": 0.10917966424574352,
+      "ci95": [
+        0.096026240698508,
+        0.12275473495785873
+      ],
+      "G_rep_1x": 0.026574592213358766,
+      "G_phase_rand": 0.0012144302893201354,
+      "decision": "SCALES_WITH_AMPLITUDE"
+    },
+    "effect_0.10": {
+      "G_scale_10x": 0.17087748541493036,
+      "ci95": [
+        0.1570808347051231,
+        0.18500977205400365
+      ],
+      "G_rep_1x": 0.03902845576854387,
+      "G_phase_rand": 0.0012144302893201354,
+      "decision": "SCALES_WITH_AMPLITUDE"
+    }
+  }
+}
