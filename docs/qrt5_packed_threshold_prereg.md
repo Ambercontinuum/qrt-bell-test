@@ -358,6 +358,21 @@ This registration therefore separates:
 - QRT4 confirmatory failure, which stands as reported.
 - QRT5 packed-state threshold hypothesis, which is new and must stand or fall on new data.
 
+### Source-Paper Alignment And Limits
+
+The source QRT paper centers on a time-dependent resonance term that reshapes quantum dynamics, with a phase form `R(t) = R0 cos(wr t)`, a Hamiltonian perturbation form `H(t) = H0 + V0 cos(wr t)`, and a quantum-computing prediction that superconducting-qubit coherence should increase by 5-10% near `wr = 10 MHz` under Ramsey interferometry.
+
+QRT5 stays aligned with that spirit in four ways:
+
+- It remains a Ramsey-family hardware experiment.
+- It keeps the physical fractional-RX drive construction and waveform audit from the later physical-drive tests.
+- It preserves the theory-designated 10 MHz driven condition alongside off-resonance and undriven comparators.
+- It tests for a tau-localized resonance structure in the measured quantum readout rather than a post-hoc visual pattern.
+
+QRT5 is also intentionally narrower and different from the source paper's explicit coherence prediction. It does not claim that a replicated packed-state threshold would prove the original 5-10% T2 prediction. It also does not let a failure of the packed-state threshold endpoint erase every possible QRT formulation. The result binds the frozen QRT5 endpoint: whether the same nontrivial packed-state population transition emerges reproducibly under the registered circuit, backend, tau grid, and analysis rule.
+
+This distinction is deliberate. The earlier mathematical/T2 falsification may be correct for its frozen endpoint while still leaving room to test whether the observed packed readout structure is a real resonance-like effect. QRT5 therefore treats the QRT4 packed signal as a new, preregistered derivative hypothesis from QRT's resonance framework, not as a rescue or amendment of QRT4.
+
 ---
 
 ### Attachments To Upload With Registration
