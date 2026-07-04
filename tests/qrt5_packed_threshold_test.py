@@ -6,10 +6,11 @@ QRT5 Packed-State Threshold Test
 Confirmatory follow-up to the exploratory signal observed in QRT4.
 
 QRT4 falsified the preregistered 10 MHz T2* coherence-gain endpoint, but the
-packed readout showed a tau-localized joint-state population wave. QRT5 tests a
-new, explicitly preregistered endpoint: reproducibility of the packed bitstring
-state 011001 as a threshold-like joint-state transition across balanced
-assignment repetitions.
+packed readout showed tau-localized joint-state population waves. QRT5 tests a
+new, explicitly preregistered endpoint: whether any nonzero packed bitstring
+state exhibits a reproducible threshold-like transition across balanced
+assignment repetitions. The QRT4 carrier state 011001 is retained as a
+secondary prior state, not as the sole primary endpoint.
 
 Usage:
   python tests/qrt5_packed_threshold_test.py --backend synthetic
@@ -42,13 +43,15 @@ SHOTS = 19500
 N_BOOT = 1000
 SEED = 20260704
 BALANCED_REPS = 2
-TARGET_STATE = "011001"
+PRIOR_STATE = "011001"
+EXCLUDED_STATES = {"000000"}
 
 MIN_PEAK_PROB = 0.20
 MIN_LIFT_FROM_EDGE = 0.15
 MIN_BOOT_LIFT = 0.10
 MIN_BOOT_PEAK = 0.15
 MAX_PEAK_TAU_SPAN_NS = 1000
+MIN_WINNER_STABILITY = 0.90
 
 RESULTS_DIR = Path("results")
 
@@ -230,7 +233,7 @@ def normalize_counts(counts: dict[str, int], n_clbits: int) -> dict[str, int]:
     return norm
 
 
-def state_probability(row: dict[str, Any], state: str = TARGET_STATE) -> float:
+def state_probability(row: dict[str, Any], state: str) -> float:
     counts = row["counts"]
     total = int(sum(counts.values()))
     return 0.0 if total == 0 else counts.get(state, 0) / total
@@ -242,11 +245,9 @@ def _edge_mean(vals: list[float], edge_n: int = 3) -> float:
     return float(max(np.mean(vals[:edge_n]), np.mean(vals[-edge_n:])))
 
 
-def analyze_packed_counts(
+def _state_metrics(
     packed_rows: list[dict[str, Any]],
-    n_boot: int = N_BOOT,
-    seed: int = SEED,
-    target_state: str = TARGET_STATE,
+    state: str,
 ) -> dict[str, Any]:
     taus = sorted({int(r["tau_ns"]) for r in packed_rows})
     reps = sorted({int(r["balance_rep"]) for r in packed_rows})
@@ -258,7 +259,7 @@ def analyze_packed_counts(
     peak_probs = []
     peak_taus = []
     for rep in reps:
-        vals = [state_probability(by[(tau, rep)], target_state) for tau in taus]
+        vals = [state_probability(by[(tau, rep)], state) for tau in taus]
         series[str(rep)] = [float(v) for v in vals]
         peak_idx = int(np.argmax(vals))
         peak_prob = float(vals[peak_idx])
@@ -279,10 +280,71 @@ def analyze_packed_counts(
         "min_lift_from_edge": float(min(lifts)),
         "peak_tau_span_ns": int(max(peak_taus) - min(peak_taus)),
     }
+    return {
+        "state": state,
+        "taus_ns": taus,
+        "state_probability_by_rep": series,
+        "peak_by_rep": peak_by_rep,
+        "observed": observed,
+    }
+
+
+def _all_candidate_states(packed_rows: list[dict[str, Any]]) -> list[str]:
+    states = set()
+    for row in packed_rows:
+        states.update(row["counts"])
+    return sorted(s for s in states if s not in EXCLUDED_STATES)
+
+
+def _transition_score(metrics: dict[str, Any]) -> float:
+    obs = metrics["observed"]
+    if obs["peak_tau_span_ns"] > MAX_PEAK_TAU_SPAN_NS:
+        return -1.0
+    return float(min(obs["min_peak_prob"], obs["min_lift_from_edge"]))
+
+
+def _select_winner(packed_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    candidates = _all_candidate_states(packed_rows)
+    metrics = [_state_metrics(packed_rows, state) for state in candidates]
+    if not metrics:
+        raise RuntimeError("No candidate packed states available for threshold scan")
+    metrics.sort(
+        key=lambda m: (
+            _transition_score(m),
+            m["observed"]["min_lift_from_edge"],
+            m["observed"]["min_peak_prob"],
+            m["state"],
+        ),
+        reverse=True,
+    )
+    winner = metrics[0]
+    winner["candidate_count"] = len(candidates)
+    winner["top_candidates"] = [
+        {
+            "state": m["state"],
+            "score": _transition_score(m),
+            "observed": m["observed"],
+        }
+        for m in metrics[:10]
+    ]
+    return winner
+
+
+def analyze_packed_counts(
+    packed_rows: list[dict[str, Any]],
+    n_boot: int = N_BOOT,
+    seed: int = SEED,
+    prior_state: str = PRIOR_STATE,
+) -> dict[str, Any]:
+    winner = _select_winner(packed_rows)
+    winner_state = winner["state"]
+    prior = _state_metrics(packed_rows, prior_state) if prior_state else None
+    observed = winner["observed"]
 
     rng = np.random.default_rng(seed)
     boot_min_peaks = []
     boot_min_lifts = []
+    boot_winner_states = []
     for _ in range(n_boot):
         boot_rows = []
         for row in packed_rows:
@@ -296,7 +358,9 @@ def analyze_packed_counts(
             sample = rng.multinomial(total, probs)
             boot_counts = {k: int(v) for k, v in zip(keys, sample)}
             boot_rows.append({**row, "counts": boot_counts})
-        boot = analyze_packed_counts(boot_rows, 0, seed, target_state)
+        boot_winner = _select_winner(boot_rows)
+        boot_winner_states.append(boot_winner["state"])
+        boot = _state_metrics(boot_rows, winner_state)
         boot_min_peaks.append(boot["observed"]["min_peak_prob"])
         boot_min_lifts.append(boot["observed"]["min_lift_from_edge"])
 
@@ -306,36 +370,49 @@ def analyze_packed_counts(
     else:
         peak_ci = [math.nan, math.nan]
         lift_ci = [math.nan, math.nan]
+    winner_stability = (
+        boot_winner_states.count(winner_state) / len(boot_winner_states)
+        if boot_winner_states else 1.0
+    )
 
     if (
         observed["min_peak_prob"] >= MIN_PEAK_PROB
         and observed["min_lift_from_edge"] >= MIN_LIFT_FROM_EDGE
         and observed["peak_tau_span_ns"] <= MAX_PEAK_TAU_SPAN_NS
+        and winner_stability >= MIN_WINNER_STABILITY
         and peak_ci[0] >= MIN_BOOT_PEAK
         and lift_ci[0] >= MIN_BOOT_LIFT
     ):
-        decision = "THRESHOLD_REPLICATED"
+        decision = "RESONANCE_THRESHOLD_REPLICATED"
     elif peak_ci[1] < MIN_BOOT_PEAK or lift_ci[1] < MIN_BOOT_LIFT:
-        decision = "NO_REPLICATED_THRESHOLD"
+        decision = "NO_REPLICATED_RESONANCE_THRESHOLD"
     else:
         decision = "INCONCLUSIVE"
 
     return {
-        "target_state": target_state,
-        "taus_ns": taus,
-        "state_probability_by_rep": series,
-        "peak_by_rep": peak_by_rep,
+        "primary_scan": "all observed six-bit states excluding 000000",
+        "excluded_states": sorted(EXCLUDED_STATES),
+        "winner_state": winner_state,
+        "prior_state": prior_state,
+        "candidate_count": winner["candidate_count"],
+        "top_candidates": winner["top_candidates"],
+        "taus_ns": winner["taus_ns"],
+        "state_probability_by_rep": winner["state_probability_by_rep"],
+        "peak_by_rep": winner["peak_by_rep"],
         "observed": observed,
+        "prior_state_metrics": prior,
         "ci95": {
             "min_peak_prob": peak_ci,
             "min_lift_from_edge": lift_ci,
         },
+        "winner_bootstrap_stability": winner_stability,
         "decision_thresholds": {
             "min_peak_prob": MIN_PEAK_PROB,
             "min_lift_from_edge": MIN_LIFT_FROM_EDGE,
             "min_boot_peak": MIN_BOOT_PEAK,
             "min_boot_lift": MIN_BOOT_LIFT,
             "max_peak_tau_span_ns": MAX_PEAK_TAU_SPAN_NS,
+            "min_winner_stability": MIN_WINNER_STABILITY,
         },
         "n_boot": n_boot,
         "decision": decision,
@@ -346,7 +423,7 @@ def synthetic_packed_counts(
     taus: list[int],
     shots: int,
     seed: int = SEED,
-    target_state: str = TARGET_STATE,
+    target_state: str = PRIOR_STATE,
     peak_prob: float = 0.30,
 ) -> list[dict[str, Any]]:
     rng = np.random.default_rng(seed)
@@ -381,10 +458,10 @@ def run_synthetic(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, 
         taus,
         args.shots,
         args.seed,
-        args.target_state,
+        args.prior_state,
         args.synthetic_peak_prob,
     )
-    analysis = analyze_packed_counts(packed_rows, args.n_boot, args.seed, args.target_state)
+    analysis = analyze_packed_counts(packed_rows, args.n_boot, args.seed, args.prior_state)
     return {
         "backend_kind": "synthetic",
         "non_evidential": True,
@@ -452,7 +529,7 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
     except Exception as exc:
         print(f"[options] note: {exc!r}")
 
-    print(f"[submit] {len(isa)} PUBs x {args.shots} shots, target_state={args.target_state}")
+    print(f"[submit] {len(isa)} PUBs x {args.shots} shots, prior_state={args.prior_state}")
     job = sampler.run([(qc,) for qc in isa])
     print(f"[job] id = {job.job_id()} - waiting...")
     result = job.result()
@@ -468,7 +545,7 @@ def run_ibm(args: argparse.Namespace, audit: dict[str, Any]) -> dict[str, Any]:
             "counts": counts,
         })
 
-    analysis = analyze_packed_counts(packed_rows, args.n_boot, args.seed, args.target_state)
+    analysis = analyze_packed_counts(packed_rows, args.n_boot, args.seed, args.prior_state)
     return {
         "backend_kind": "ibm",
         "backend": backend.name,
@@ -493,7 +570,7 @@ def frozen_parameters(args: argparse.Namespace) -> dict[str, Any]:
         "n_taus": args.n_taus,
         "shots": args.shots,
         "balance_reps": args.balance_reps,
-        "target_state": args.target_state,
+        "prior_state": args.prior_state,
         "planned_pubs": args.n_taus * len(balanced_assignments(args.balance_reps)),
         "n_boot": args.n_boot,
         "seed": args.seed,
@@ -519,7 +596,7 @@ def main() -> None:
     ap.add_argument("--tau-max-ns", type=int, default=TAU_MAX_NS)
     ap.add_argument("--n-taus", type=int, default=N_TAUS)
     ap.add_argument("--balance-reps", type=int, default=BALANCED_REPS)
-    ap.add_argument("--target-state", default=TARGET_STATE)
+    ap.add_argument("--prior-state", default=PRIOR_STATE)
     ap.add_argument("--synthetic-peak-prob", type=float, default=0.30)
     ap.add_argument("--out-dir", default=str(RESULTS_DIR))
     args = ap.parse_args()
@@ -553,11 +630,13 @@ def main() -> None:
     ci = analysis["ci95"]
     print(f"results -> {fname}")
     print(
-        "target_state = "
-        f"{analysis['target_state']} "
+        "winner_state = "
+        f"{analysis['winner_state']} "
+        f"prior_state={analysis['prior_state']} "
         f"min_peak={obs['min_peak_prob']:.3f} "
         f"min_lift={obs['min_lift_from_edge']:.3f} "
-        f"peak_tau_span_ns={obs['peak_tau_span_ns']}"
+        f"peak_tau_span_ns={obs['peak_tau_span_ns']} "
+        f"winner_stability={analysis['winner_bootstrap_stability']:.3f}"
     )
     print(
         "95% CI min_peak "

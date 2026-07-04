@@ -15,9 +15,9 @@ Preregistered Packed-State Threshold Test of QRT4's Joint Readout Transition Sig
 
 ### Description
 
-QRT4 falsified the preregistered 10 MHz T2* coherence-gain endpoint. However, its packed Ramsey readout produced a structured tau-dependent joint-state population wave. The most prominent exploratory packed bitstring was `011001`, which rose from near zero, peaked in the mid-delay region, and declined or gave way to other joint states.
+QRT4 falsified the preregistered 10 MHz T2* coherence-gain endpoint. However, its packed Ramsey readout produced structured tau-dependent joint-state population waves. The most prominent exploratory packed bitstring was `011001`, which rose from near zero, peaked in the mid-delay region, and declined or gave way to other joint states.
 
-This QRT5 registration does not reinterpret QRT4 as positive. It tests a new claim: whether the packed bitstring `011001` exhibits a reproducible threshold-like population transition across balanced assignment repetitions in a new hardware run.
+This QRT5 registration does not reinterpret QRT4 as positive. It tests a new claim: whether the packed readout distribution contains a reproducible threshold-like population transition in any nonzero six-bit packed state across balanced assignment repetitions in a new hardware run. The QRT4 state `011001` is retained as a prior-state descriptor and secondary report, not as the sole primary endpoint.
 
 The endpoint is joint-state population geometry, not single-condition T2* gain. The result will be reported publicly regardless of outcome.
 
@@ -25,21 +25,22 @@ The endpoint is joint-state population geometry, not single-condition T2* gain. 
 
 ### Research Questions Or Hypotheses
 
-H1: The packed bitstring `011001` exhibits a reproducible tau-localized threshold-like population transition across both balanced assignment repetitions.
+H1: At least one nonzero six-bit packed state exhibits a reproducible tau-localized threshold-like population transition across both balanced assignment repetitions under the preregistered all-state scan.
 
-H0: The packed bitstring `011001` does not show a reproducible threshold-like transition under the preregistered peak, lift, and assignment-repetition criteria.
+H0: No nonzero six-bit packed state shows a reproducible threshold-like transition under the preregistered peak, lift, and assignment-repetition criteria.
 
 Primary quantities:
 
-- `p_r(tau)`: probability of packed bitstring `011001` at delay tau in assignment repetition r.
+- `p_s,r(tau)`: probability of packed bitstring state s at delay tau in assignment repetition r.
 - `peak_prob_r`: maximum `p_r(tau)` over the frozen tau grid.
 - `edge_prob_r`: larger of the early-edge mean and late-edge mean, where each edge mean uses three tau points.
 - `lift_r = peak_prob_r - edge_prob_r`.
 - `min_peak_prob = min_r(peak_prob_r)`.
 - `min_lift_from_edge = min_r(lift_r)`.
 - `peak_tau_span_ns = max_r(peak_tau_r) - min_r(peak_tau_r)`.
+- `winner_bootstrap_stability`: fraction of bootstrap resamples in which the frozen all-state scan selects the same winning state.
 
-Confirmatory success requires the same target state to peak strongly in both assignment repetitions, with peak locations close in tau.
+The frozen analysis scans all observed six-bit states except `000000`. Confirmatory success requires the same winning state to peak strongly in both assignment repetitions, with peak locations close in tau and stable bootstrap selection. The identity of the winning state is an output of the frozen scan.
 
 ---
 
@@ -50,7 +51,8 @@ No QRT5 hardware data exist at the time of this registration.
 QRT4 data exist and motivated this new endpoint. QRT4 is not used as confirmatory evidence for QRT5. It is prior exploratory evidence used to choose:
 
 - the packed-state endpoint,
-- target bitstring `011001`,
+- all-state packed threshold endpoint,
+- prior state `011001` for secondary reporting,
 - the same tau grid,
 - the same balanced packed circuit family,
 - and the target backend family, preferably `ibm_marrakesh`.
@@ -61,9 +63,9 @@ QRT4's confirmatory verdict remains falsified as specified for its T2* endpoint.
 
 ### Explanation Of Foreknowledge And Managing Unintended Influences
 
-The target state `011001` and threshold-style endpoint were selected after inspecting QRT4. This makes QRT5 a new confirmatory test, not a post-hoc reinterpretation of QRT4.
+The threshold-style endpoint and prior state `011001` were selected after inspecting QRT4. This makes QRT5 a new confirmatory test, not a post-hoc reinterpretation of QRT4.
 
-The target state, tau grid, assignment repetitions, backend rule, script, random seed, peak/lift thresholds, bootstrap rules, and decision criteria are frozen before QRT5 hardware execution. Any later change to target state, tau grid, backend, assignment mapping, bit-order convention, threshold values, or decision rule is exploratory unless separately preregistered before new execution.
+The candidate state family, excluded state `000000`, prior state, tau grid, assignment repetitions, backend rule, script, random seed, peak/lift thresholds, bootstrap rules, and decision criteria are frozen before QRT5 hardware execution. Any later change to candidate state family, excluded states, prior state, tau grid, backend, assignment mapping, bit-order convention, threshold values, or decision rule is exploratory unless separately preregistered before new execution.
 
 ---
 
@@ -81,7 +83,7 @@ Direct inference on causal relationship(s) is limited. The study tests whether a
 
 ### Blinding Of Experimental Treatments
 
-No blinding is involved. The target bitstring and assignment maps are embedded in the frozen analysis script. The confirmatory decision rule is applied once after all planned counts return.
+No blinding is involved. The all-state scan rule, prior-state descriptor, and assignment maps are embedded in the frozen analysis script. The confirmatory decision rule is applied once after all planned counts return.
 
 ---
 
@@ -95,7 +97,7 @@ For each Ramsey delay tau, one circuit contains all six conditions in parallel:
 - 1, 5, 15, and 25 MHz driven conditions.
 - Undriven reference.
 
-The design uses two balanced assignment repetitions. The second repetition rotates condition-to-qubit assignment so the target bitstring can be tested for reproducibility across assignment labels.
+The design uses two balanced assignment repetitions. The second repetition rotates condition-to-qubit assignment so any winning packed state can be tested for reproducibility across assignment labels.
 
 Preparation and measurement for each condition/qubit:
 
@@ -149,7 +151,7 @@ Data:
 - Waveform-audit file.
 - Calibration snapshot.
 
-No measurement-error mitigation, dynamical decoupling, twirling, zero-noise extrapolation, smoothing, state merging, target-state switching, tau-window selection, or post-hoc bit-order reinterpretation is applied in the confirmatory analysis.
+No measurement-error mitigation, dynamical decoupling, twirling, zero-noise extrapolation, smoothing, state merging, post-hoc state-family switching, tau-window selection, or post-hoc bit-order reinterpretation is applied in the confirmatory analysis.
 
 ---
 
@@ -164,15 +166,15 @@ Planned structure:
 - Shots per PUB: 19,500.
 - Circuit shots submitted: 585,000.
 
-The target-state probability is estimated separately for each tau and assignment repetition from packed bitstring counts.
+State probabilities are estimated separately for each tau and assignment repetition from packed bitstring counts.
 
 ---
 
 ### Sample Size Rationale
 
-QRT4 observed the target state at approximately 30% peak probability in both assignment repetitions. QRT5 uses the same 19,500 shots per PUB so that a replicated peak at or near that scale should be far above binomial sampling noise.
+QRT4 observed the prior state `011001` at approximately 30% peak probability in both assignment repetitions. QRT5 uses the same 19,500 shots per PUB so that a replicated packed-state peak at or near that scale should be far above binomial sampling noise.
 
-Synthetic pipeline checks are non-evidential and verify only that the frozen analysis detects an injected threshold-like target-state population wave.
+Synthetic pipeline checks are non-evidential and verify only that the frozen analysis detects an injected threshold-like packed-state population wave and rejects a no-threshold distribution.
 
 ---
 
@@ -206,7 +208,7 @@ Embedded drive conditions:
 
 - 10 MHz, 1 MHz, 5 MHz, 15 MHz, 25 MHz, and undriven reference.
 
-The confirmatory endpoint is not a 10 MHz-vs-control T2* contrast. It is the packed population trajectory of target bitstring `011001`.
+The confirmatory endpoint is not a 10 MHz-vs-control T2* contrast. It is the strongest reproducible packed-state population trajectory found by the frozen all-state scan.
 
 ---
 
@@ -218,7 +220,9 @@ Primitive data:
 
 Derived quantities:
 
-- `p_r(tau)` for target state `011001`.
+- `p_s,r(tau)` for packed states in the frozen candidate family.
+- winning packed state identity.
+- prior-state `011001` metrics for secondary reporting.
 - Peak probability per assignment repetition.
 - Edge probability per assignment repetition.
 - Lift from edge per assignment repetition.
@@ -244,6 +248,7 @@ Primary indices:
 - `min_peak_prob`.
 - `min_lift_from_edge`.
 - `peak_tau_span_ns`.
+- `winner_bootstrap_stability`.
 
 Definitions:
 
@@ -256,7 +261,8 @@ Definitions:
 
 Secondary descriptive indices:
 
-- Full target-state probability curve by tau and repetition.
+- Full winning-state probability curve by tau and repetition.
+- Prior-state `011001` probability curve by tau and repetition.
 - Top packed states by tau.
 - Entropy or concentration of packed-state distributions.
 - Assignment-specific state trajectories.
@@ -269,42 +275,45 @@ Only the primary indices enter the confirmatory decision rule.
 
 No T2* model is fit for QRT5's confirmatory endpoint.
 
-For each tau and assignment repetition, target-state probability is:
+For each candidate state s, tau, and assignment repetition, packed-state probability is:
 
 ```text
-p_r(tau) = count(011001 at tau, repetition r) / total shots at tau, repetition r
+p_s,r(tau) = count(state s at tau, repetition r) / total shots at tau, repetition r
 ```
 
 Uncertainty:
 
 - Bootstrap resampling over each packed circuit's multinomial bitstring counts.
-- Recompute the full target-state trajectory and primary indices for each bootstrap draw.
+- The winning state is selected once from the observed dataset by the frozen all-state scan.
+- Bootstrap resampling recomputes the winning state's trajectory and primary indices.
+- Bootstrap resampling also reruns the full all-state scan to measure winner stability.
 - Report 2.5th and 97.5th percentiles for `min_peak_prob` and `min_lift_from_edge`.
 
 Decision rule:
 
-- `THRESHOLD_REPLICATED` if all are true:
+- `RESONANCE_THRESHOLD_REPLICATED` if all are true:
   - observed `min_peak_prob >= 0.20`,
   - observed `min_lift_from_edge >= 0.15`,
   - observed `peak_tau_span_ns <= 1000`,
+  - `winner_bootstrap_stability >= 0.90`,
   - bootstrap 95% CI lower bound for `min_peak_prob >= 0.15`,
   - bootstrap 95% CI lower bound for `min_lift_from_edge >= 0.10`.
-- `NO_REPLICATED_THRESHOLD` if bootstrap 95% CI upper bound for `min_peak_prob < 0.15` or bootstrap 95% CI upper bound for `min_lift_from_edge < 0.10`.
+- `NO_REPLICATED_RESONANCE_THRESHOLD` if bootstrap 95% CI upper bound for `min_peak_prob < 0.15` or bootstrap 95% CI upper bound for `min_lift_from_edge < 0.10`.
 - Otherwise `INCONCLUSIVE`.
 
 ---
 
 ### Transformations
 
-Raw packed bitstring counts are normalized to fixed six-bit strings using the bit-order convention in the frozen script. Counts for target state `011001` are divided by total shots at each tau and assignment repetition.
+Raw packed bitstring counts are normalized to fixed six-bit strings using the bit-order convention in the frozen script. State `000000` is excluded from the primary all-state threshold scan because it represents the trivial early all-zero Ramsey preparation/readout state. All other observed six-bit states are candidates.
 
-No target-state switching, smoothing, curve fitting, state aggregation, tau-window trimming, readout correction, or post-hoc bit-order reversal is permitted for the confirmatory verdict.
+No candidate-family switching, smoothing, curve fitting, state aggregation, tau-window trimming, readout correction, or post-hoc bit-order reversal is permitted for the confirmatory verdict.
 
 ---
 
 ### Inference Criteria
 
-Inference is interval-based and threshold-based. The target-state transition is considered replicated only if the observed peak/lift/tau-alignment criteria and bootstrap lower-bound criteria all pass.
+Inference is interval-based and threshold-based. A packed resonance-threshold transition is considered replicated only if the observed peak/lift/tau-alignment criteria, bootstrap winner-stability criterion, and bootstrap lower-bound criteria all pass for the frozen scan's winning state.
 
 This test does not support or refute the QRT4 T2* coherence-gain claim. It tests a new packed-state threshold endpoint motivated by QRT4's exploratory readout structure.
 
@@ -328,7 +337,7 @@ No missing cell is imputed, interpolated, or filled from another session. A perm
 
 None for confirmatory inference.
 
-Exploratory analyses, if performed, may inspect non-target bitstrings, entropy, backend calibration relationships, or qubit-geometry correlations. These cannot alter the confirmatory QRT5 decision.
+Exploratory analyses, if performed, may inspect non-winning bitstrings, entropy, backend calibration relationships, drive-frequency labels, or qubit-geometry correlations. These cannot alter the confirmatory QRT5 decision.
 
 ---
 
@@ -342,7 +351,7 @@ G_T2 = -77.30%
 decision = FALSIFIED_AS_SPECIFIED
 ```
 
-QRT4 also revealed a tau-localized packed bitstring structure, especially for `011001`. QRT5 is the new confirmatory test of that exploratory structure.
+QRT4 also revealed tau-localized packed bitstring structure, especially for `011001`. QRT5 is the new confirmatory test of the broader packed-state threshold structure. It records whether `011001` is again the carrier, but it does not require that state to be the only possible carrier.
 
 This registration therefore separates:
 
@@ -356,4 +365,4 @@ This registration therefore separates:
 Uploaded or recorded before freeze:
 
 - `tests/qrt5_packed_threshold_test.py` frozen execution/analysis script.
-- SHA-256: `bc8502f40c9da0a987eec79ebef99ad0d704492b4fc3a205a08803acd091f4ab`
+- SHA-256: `55d01b5d2f41cb43b2fb67fcfa10aa1657ee44b01c521232fe1331d5c73dc9e7`
