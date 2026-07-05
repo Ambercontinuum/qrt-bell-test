@@ -1,0 +1,35 @@
+{
+  "purpose": "v5 calibration: PRIMARY G_rep = 10MHz@1xR0 vs mean(9,11 MHz) \u2014 the paper's point claim at confirmatory power on a second device. Threshold +0.9% (half the v4.1 effect in area units). NON-EVIDENTIAL.",
+  "runs": {
+    "effect_0.0": {
+      "G_rep": 0.00010135346633687929,
+      "ci95": [
+        -0.007716947879224016,
+        0.00831901218514657
+      ],
+      "G_amp_10x": -0.0020893403056797964,
+      "G_phase_rand": -0.0019771888435829014,
+      "decision": "NOT_REPLICATED"
+    },
+    "effect_0.05": {
+      "G_rep": 0.01627839877956945,
+      "ci95": [
+        0.008583296228087926,
+        0.02489707668080831
+      ],
+      "G_amp_10x": 0.13185989066889317,
+      "G_phase_rand": -0.0036987305464638823,
+      "decision": "REPLICATED_ON_SECOND_DEVICE"
+    },
+    "effect_0.10": {
+      "G_rep": 0.031459645621476524,
+      "ci95": [
+        0.02371386399036485,
+        0.03943283881504727
+      ],
+      "G_amp_10x": 0.20931830646010752,
+      "G_phase_rand": -0.0012456503486973892,
+      "decision": "REPLICATED_ON_SECOND_DEVICE"
+    }
+  }
+}

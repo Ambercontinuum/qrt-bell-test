@@ -1,4 +1,4 @@
-# Outcome Report — QRT Ramsey/T2 Program: v4 (withdrawn), v4.1 (QRT-consistent, escalation pending), v4.2 (micro-discriminator, result pending)
+# Outcome Report — QRT Ramsey/T2 Program: v4 (withdrawn), v4.1 (QRT-consistent escalation trigger), v4.2 (does not scale)
 
 **Author:** Amber Anson, AmberContinuum Research
 **Protocol and analysis drafted in collaboration with:** Claude (Anthropic); v4 implementation by a third-party AI coding tool under the author's design
@@ -24,9 +24,22 @@ Descriptive structure:
 
 **Per the registration's own terms, this result is treated as an artifact until it survives: (i) replication on a second fractional-gate device, (ii) an amplitude sweep (R0 × {0.1, 1, 10}), and (iii) drive-phase randomization.** No positive claim is made or implied by this report.
 
-## 3. v4.2 micro-discriminator (preregistered; script SHA-256 75fed415…6d96a9) — RESULT PENDING
+## 3. v4.2 amplitude-scaling micro-discriminator (job d94j866vtlqs73fucnvg, ibm_marrakesh, July 4-5 2026) — DOES NOT SCALE
 
-One-sided neighbor test executed within residual QPU quota: is the 10 MHz elevation locally peaked (resonance signature) or shared by 9/11 MHz (broad-artifact signature)? Conditions {10, 9×2, 11×2, REF}, full rotation, 4-delay grid, declared one-sided decision (LOCAL_PEAK_REPLICATED / PEAK_NOT_DETECTED); the budget cannot support and does not claim a falsification branch. Result to be appended on completion.
+Preregistered amplitude-scaling and multi-vector adjudication of the v4.1 QRT-consistent result, frozen to `qrt42_scaling_test.py` (SHA-256 `9a386ccfb658f64417c5795ca7d1261ad1e1a80ff5bae1cc86f85f3099843318`). The run used a second device relative to v4.1 (`ibm_marrakesh`, not `ibm_fez`), full six-fold condition-to-qubit rotation, four Ramsey delays, 5,000 shots per circuit, physical fractional-RX drive, and the preregistered amplified-arm contrast:
+
+```text
+G_scale = A(10 MHz @ 10x R0) / mean(A(9 MHz @ 1x R0), A(11 MHz @ 1x R0)) - 1
+```
+
+**Result:** G_scale = **+1.07%**, bootstrap 95% CI **[-0.16%, +2.24%]**. Preregistered decision: **DOES_NOT_SCALE** because the 95% CI upper bound falls below the +3% amplitude-scaling threshold.
+
+Secondary descriptive indices:
+
+- G_rep(10 MHz @ 1x vs 9/11 MHz neighbors) = **-0.88%**.
+- G_phase_rand(10 MHz randomized phase vs 9/11 MHz neighbors) = **-1.33%**.
+
+Interpretation under the v4.2 registration: the v4.1 QRT-consistent result does **not** survive the amplitude-scaling discriminator. This removes the drive-coupled scaling interpretation targeted by v4.2 and favors a non-scaling artifact/noise-spectrum/filter-function explanation over a QRT-class amplitude-coupled mechanism. Per the v4.2 registration's own scope statement, a DOES_NOT_SCALE outcome does not formally falsify the original paper's exact R0-point prediction; it adjudicates the v4.1 escalation result against the registered scaling mechanism.
 
 ## 4. Program standing
 
@@ -35,9 +48,11 @@ One-sided neighbor test executed within residual QPU quota: is the 10 MHz elevat
 | #1 (Bell, phase modulation) | virtual RZ drive | Falsified as specified |
 | #2 (Bell, physical drive) | fractional RX | Falsified as specified |
 | v4 (Ramsey) | flawed implementation | Verdict withdrawn |
-| v4.1 (Ramsey, corrected) | fractional RX | **QRT-consistent; escalation pending** |
-| v4.2 (neighbor micro-test) | fractional RX | Pending |
+| v4.1 (Ramsey, corrected) | fractional RX | QRT-consistent escalation trigger |
+| v4.2 (amplitude scaling) | fractional RX | **Does not scale** |
 
-The Bell-fidelity prediction is dead in both implementable forms. The coherence prediction, under the strictest estimator in the program, returned its first surviving result — gated behind three preregistered kill conditions, with a named standard-QM alternative (filter-function interaction) that the 1 MHz elevation currently favors. Escalation (v5) is preregistration-ready: second device, amplitude sweep, phase randomization, each arm targeting a specific alternative hypothesis.
+The Bell-fidelity prediction remains falsified in both implementable forms. The corrected v4.1 Ramsey implementation produced a QRT-consistent escalation trigger, but v4.2 did not support the registered amplitude-scaling mechanism needed to interpret that trigger as drive-coupled. The current program standing is therefore: v4.1 found an anomaly worth escalating; v4.2 failed the first scaling adjudication of that anomaly.
+
+Subsequent proper QRT5 point-claim replication is reported separately in `reports/OUTCOME_REPORT_v5.md`.
 
 All raw data, frozen scripts, hashes, calibration snapshots, and this report are published together regardless of outcome, per every registration in the program.
