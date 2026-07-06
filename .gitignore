@@ -38,3 +38,12 @@ desktop.ini
 *.temp
 tmp/
 temp/
+
+# Local-only research notes and quarantined design drafts
+private_notes/
+unused_experiments/
+
+# Local synthetic/internal check folders
+results/qrt3_*_packed_*_check/
+results/qrt3_*_check/
+results/qrt4_*_check/
