@@ -228,7 +228,7 @@ For external review, start with these files:
 | QRT4 balanced packed Ramsey | [Preregistered Balanced Packed Ramsey Test of Quantum Resonance Theory's 10 MHz Coherence Prediction on Superconducting Quantum Hardware](https://osf.io/t2vs3) | `docs/qrt4_balanced_packed_ramsey_prereg.md` |
 | v4.2 | [Preregistered Amplitude-Scaling and Multi-Vector Adjudication of a QRT-Consistent Coherence Result on Superconducting Hardware (v4.2)](https://osf.io/69pc2) | `docs/qrt42_osf_fields.md` |
 | QRT5 proper | [Preregistered Confirmatory Replication of a QRT-Consistent Coherence Result at Stated Parameters on a Second Superconducting Device (v5)](https://osf.io/jw9d6) | `docs/qrt5_osf_fields.md` |
-| Earlier registrations | Pending public release / embargo lift | `docs/qrt41_osf_fields.md` |
+| v4.1 | [Preregistered Test of Quantum Resonance Theory's Coherence-Enhancement Prediction via Ramsey Interferometry: Corrected Implementation (v4.1)](https://osf.io/6kgah) | `docs/qrt41_osf_fields.md` |
 
 ## Repository Layout
 
