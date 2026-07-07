@@ -218,6 +218,18 @@ For external review, start with these files:
 | v4.2 hardware analysis JSON | `results/qrt42/qrt42_hardware_results.json` |
 | QRT5 hardware analysis JSON | `results/qrt5/qrt5_hardware_results.json` |
 
+## OSF Registrations
+
+| Stage | OSF registration | Local field copy |
+|---|---|---|
+| Test #1 Bell fidelity | [Preregistered Test of Quantum Resonance Theory's Bell-State Fidelity Prediction on Superconducting Quantum Hardware](https://osf.io/yg923) | `reports/OUTCOME_REPORT.md` |
+| Test #2 physical drive | [Preregistered Test of Quantum Resonance Theory Under a Physically Delivered Periodic Drive on Superconducting Quantum Hardware](https://osf.io/74brn) | `docs/qrt2_osf_fields.md` |
+| QRT3 Ramsey | [Preregistered Ramsey Test of Quantum Resonance Theory's 10 MHz Coherence Prediction on Superconducting Quantum Hardware](https://osf.io/u8fv7) | `docs/qrt3_ramsey_prereg.md` |
+| QRT4 balanced packed Ramsey | [Preregistered Balanced Packed Ramsey Test of Quantum Resonance Theory's 10 MHz Coherence Prediction on Superconducting Quantum Hardware](https://osf.io/t2vs3) | `docs/qrt4_balanced_packed_ramsey_prereg.md` |
+| v4.2 | [Preregistered Amplitude-Scaling and Multi-Vector Adjudication of a QRT-Consistent Coherence Result on Superconducting Hardware (v4.2)](https://osf.io/69pc2) | `docs/qrt42_osf_fields.md` |
+| QRT5 proper | [Preregistered Confirmatory Replication of a QRT-Consistent Coherence Result at Stated Parameters on a Second Superconducting Device (v5)](https://osf.io/jw9d6) | `docs/qrt5_osf_fields.md` |
+| Earlier registrations | Pending public release / embargo lift | `docs/qrt41_osf_fields.md` |
+
 ## Repository Layout
 
 ```text
@@ -235,6 +247,10 @@ public record.
 The filed result JSON files store IBM Runtime result payloads and derived
 analysis outputs. The confirmatory analysis path is defined by the corresponding
 frozen scripts and preregistered decision rules.
+
+IBM account-linked identifiers such as exported `user_id` values are redacted
+from public job-info files; job IDs, backend names, timestamps, status, cost,
+calibration snapshots, raw counts, and result payloads are preserved.
 
 Verify the QRT5 script hash before re-analysis:
 
