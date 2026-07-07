@@ -11,10 +11,11 @@ records, outcome reports, and documented withdrawals. Confirmatory claims are
 limited to preregistered primary endpoints.
 
 The development methodology used for the experimental program is referred to
-here as **coherence systems architecture**: a design technique for structuring
-coherence experiments as linked systems of stated claims, control conditions,
-hardware constraints, preregistered endpoints, escalation rules, artifact
-boundaries, and reproducibility records.
+here as **coherence systems architecture**: preregistration text, executable
+tests, hashes, hardware outputs, model-assisted critique, and outcome reports
+were treated as a coupled verification system. The working aim was invariant
+preservation under perturbation: each change in design, implementation, or
+interpretation had to remain traceable against the frozen record.
 
 ## Status Summary
 
@@ -247,10 +248,6 @@ public record.
 The filed result JSON files store IBM Runtime result payloads and derived
 analysis outputs. The confirmatory analysis path is defined by the corresponding
 frozen scripts and preregistered decision rules.
-
-IBM account-linked identifiers such as exported `user_id` values are redacted
-from public job-info files; job IDs, backend names, timestamps, status, cost,
-calibration snapshots, raw counts, and result payloads are preserved.
 
 Verify the QRT5 script hash before re-analysis:
 
