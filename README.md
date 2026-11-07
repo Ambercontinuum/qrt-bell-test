@@ -1,8 +1,8 @@
 # QRT Hardware Adjudication Record
 
-This repository contains the public experimental record (DOI: [10.5281/zenodo.24029097](https://doi.org/10.5281/zenodo.24029097))for a sequence of
+This repository contains the public experimental record (DOI: [10.5281/zenodo.24029097](https://doi.org/10.5281/zenodo.24029097)) for a sequence of
 preregistered tests of Quantum Resonance Theory (QRT; Anson 2024,
-DOI: [10.5281/zenodo.21263717](https://doi.org/10.5281/zenodo.21263717))on
+DOI: [10.5281/zenodo.21263717](https://doi.org/10.5281/zenodo.21263717)) on
 IBM superconducting quantum hardware.
 
 The repository is organized as an audit and handoff package. It preserves
